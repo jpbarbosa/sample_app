@@ -11,6 +11,16 @@ describe "Authentication" do
     it { should have_selector('title', text: 'Sign in') }
   end
 
+  describe "unsign user" do
+    let(:user) { FactoryGirl.create(:user) }
+    before { visit root_path }
+
+    it { should_not have_link('Users',    href: users_path) }
+    it { should_not have_link('Profile',  href: user_path(user)) }
+    it { should_not have_link('Settings', href: edit_user_path(user)) }
+    it { should_not have_link('Sign out', href: signout_path) }
+  end
+
   describe "signin" do
     before { visit signin_path }
 
@@ -33,7 +43,7 @@ describe "Authentication" do
       it { should have_selector('title', text: user.name) }
 
       it { should have_link('Users',    href: users_path) }
-      it { should have_link('Profile', href: user_path(user)) }
+      it { should have_link('Profile',  href: user_path(user)) }
       it { should have_link('Settings', href: edit_user_path(user)) }
       it { should have_link('Sign out', href: signout_path) }
       
@@ -64,6 +74,20 @@ describe "Authentication" do
 
           it "should render the desired protected page" do
             page.should have_selector('title', text: 'Edit user')
+          end
+
+          describe "when signing in again" do
+            before do
+              delete signout_path
+              visit signin_path
+              fill_in "Email",    with: user.email
+              fill_in "Password", with: user.password
+              click_button "Sign in"
+            end
+
+            it "should render the default (profile) page" do
+              page.should have_selector('title', text: user.name) 
+            end
           end
         end
       end

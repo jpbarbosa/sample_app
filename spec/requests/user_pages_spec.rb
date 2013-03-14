@@ -66,6 +66,15 @@ describe "User pages" do
     it { should have_selector('title', text: full_title('Sign up')) }
   end
 
+  describe "signup page with signed user" do
+    let(:user) { FactoryGirl.create(:user) }
+    before do
+      sign_in user
+      visit signup_path
+    end
+    it { should_not have_selector('h1',    text: 'Sign up') }
+  end
+
   describe "signup" do
 
     before { visit signup_path }
@@ -87,10 +96,10 @@ describe "User pages" do
 
     describe "with valid information" do
       before do
-        fill_in "Name",         with: "Example User"
-        fill_in "Email",        with: "user@example.com"
-        fill_in "Password",     with: "foobar"
-        fill_in "Confirmation", with: "foobar"
+        fill_in "Name",             with: "Example User"
+        fill_in "Email",            with: "user@example.com"
+        fill_in "Password",         with: "foobar"
+        fill_in "Confirm Password", with: "foobar"
       end
 
       it "should create a user" do
